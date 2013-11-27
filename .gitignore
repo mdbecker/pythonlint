@@ -1,2 +1,4 @@
 results.json
-wheel.svg
+lint.svg
+.req
+env/*
