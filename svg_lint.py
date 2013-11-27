@@ -3,7 +3,7 @@ import xml.etree.ElementTree as et
 
 
 HEADERS = '''<?xml version=\"1.0\" standalone=\"no\"?>
-<?xml-stylesheet href="wheel.css" type="text/css"?>
+<?xml-stylesheet href="lint.css" type="text/css"?>
 <!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"
 \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">
 '''
@@ -109,7 +109,7 @@ def generate_svg_wheel(packages, total):
 
     add_fraction(wheel, packages, total)
 
-    with open('wheel.svg', 'w') as svg:
+    with open('lint.svg', 'w') as svg:
         svg.write(HEADERS)
         svg.write(et.tostring(wheel))
 
