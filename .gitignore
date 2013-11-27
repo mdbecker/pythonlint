@@ -2,3 +2,4 @@ results.json
 lint.svg
 .req
 env/*
+*.pyc
