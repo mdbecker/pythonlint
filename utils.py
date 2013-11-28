@@ -41,6 +41,7 @@ safe_url_re = re.compile(
 def annotate_pep8(packages):
     urls = get_source_package_urls(packages)
     num_packages = len(packages)
+    good_packages = []
     print('Downloading and running pep8...')
     for index, package in enumerate(packages):
         print index + 1, num_packages, package['name']
@@ -73,6 +74,9 @@ def annotate_pep8(packages):
             package['color'] = '#d2322d'
             package['icon'] = u'\u2717'  # Ballot X
             package['title'] = 'This package has {:.0%} pep8 errors!!'.format(package['ratio'])
+        good_packages.append(package)
+
+    packages = good_packages
 
 
 def download_package_and_run_pep8(url):
