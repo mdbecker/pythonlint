@@ -92,7 +92,7 @@ def download_package_and_run_pep8(url):
     check_output('cd temp; wget --no-check-certificate {0}'.format(url), stderr=STDOUT, shell=True)
     fname = url.rsplit('/', 1)
     check_output('cd temp; tar -xf {0}'.format(fname[-1]), shell=True)
-    pep8 = check_output('find ./temp/ -name "*.py" -print0 | xargs -0 pep8 -qq --max-line-length=99 --count; exit 0', stderr=STDOUT, shell=True)
+    pep8 = check_output('find ./temp/ -name "*.py" -print0 | xargs -0 pep8 -qq --max-line-length=99 --count | egrep -v "[A-Z][0-9]+ " | tail -1; exit 0', stderr=STDOUT, shell=True)
     pep8 = pep8.strip()
     print 'pep8', pep8
     lines = check_output('find ./temp/ -name "*.py" -print0 | xargs -0 egrep ".*" | wc -l', shell=True)
