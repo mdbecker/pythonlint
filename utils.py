@@ -36,11 +36,12 @@ def get_json_url(package_name):
 
 
 safe_url_re = re.compile(
-    '^https:\/\/pypi.python.org\/packages\/source\/[a-z]\/[a-z0-9-_.]+\/[a-z0-9-_.]+$', re.I)
+    '^https:\/\/pypi.python.org\/packages\/source\/[a-z0-9]\/[a-z0-9-_.]+\/[a-z0-9-_.]+$', re.I)
 
 def annotate_pep8(packages):
     urls = get_source_package_urls(packages)
     num_packages = len(packages)
+    good_packages = []
     print('Downloading and running pep8...')
     for index, package in enumerate(packages):
         print index + 1, num_packages, package['name']
@@ -56,23 +57,26 @@ def annotate_pep8(packages):
 
         # Display logic. I know, I'm sorry.
         package['value'] = 1
-        if package['ratio'] == 0.0:
+        if package['ratio'] < 0.005:
             package['css_class'] = 'success'
             package['color'] = '#47a447'
             package['icon'] = u'\u2713'  # Check mark
-            package['title'] = 'This package has 0% pep8 errors.'
+            package['title'] = 'This package has 0% pep8 errors!'
             package['generic_wheel'] = True
-        if package['ratio'] <= 0.10:
+        elif package['ratio'] <= 0.05:
             package['css_class'] = 'warning'
             package['color'] = '#ed9c28'
-            package['icon'] = '?'
+            package['icon'] = u'\u2717'  # Ballot X
             package['title'] = 'This package has {:.0%} pep8 errors.'.format(package['ratio'])
             package['wheel'] = True
         else:
             package['css_class'] = 'danger'
             package['color'] = '#d2322d'
             package['icon'] = u'\u2717'  # Ballot X
-            package['title'] = 'This package has {:.0%} pep8 errors.'.format(package['ratio'])
+            package['title'] = 'This package has {:.0%} pep8 errors!!'.format(package['ratio'])
+        good_packages.append(package)
+
+    return good_packages
 
 
 def download_package_and_run_pep8(url):
@@ -88,8 +92,10 @@ def download_package_and_run_pep8(url):
     check_output('cd temp; wget --no-check-certificate {0}'.format(url), stderr=STDOUT, shell=True)
     fname = url.rsplit('/', 1)
     check_output('cd temp; tar -xf {0}'.format(fname[-1]), shell=True)
-    pep8 = check_output('find ./temp/ -name "*.py" -print0 | xargs -0 pep8 -qq --max-line-length=99 --count; exit 0', stderr=STDOUT, shell=True)
+    pep8 = check_output('find ./temp/ -name "*.py" -print0 | xargs -0 pep8 -qq --max-line-length=99 --count | egrep -v "[A-Z][0-9]+ " | tail -1; exit 0', stderr=STDOUT, shell=True)
     pep8 = pep8.strip()
+    if not pep8:
+        pep8 = 0
     print 'pep8', pep8
     lines = check_output('find ./temp/ -name "*.py" -print0 | xargs -0 egrep ".*" | wc -l', shell=True)
     lines = lines.strip()
