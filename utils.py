@@ -56,23 +56,23 @@ def annotate_pep8(packages):
 
         # Display logic. I know, I'm sorry.
         package['value'] = 1
-        if package['ratio'] == 0.0:
+        if package['ratio'] < 0.005:
             package['css_class'] = 'success'
             package['color'] = '#47a447'
             package['icon'] = u'\u2713'  # Check mark
-            package['title'] = 'This package has 0% pep8 errors.'
+            package['title'] = 'This package has 0% pep8 errors!'
             package['generic_wheel'] = True
-        if package['ratio'] <= 0.10:
+        elif package['ratio'] <= 0.05:
             package['css_class'] = 'warning'
             package['color'] = '#ed9c28'
-            package['icon'] = '?'
+            package['icon'] = u'\u2717'  # Ballot X
             package['title'] = 'This package has {:.0%} pep8 errors.'.format(package['ratio'])
             package['wheel'] = True
         else:
             package['css_class'] = 'danger'
             package['color'] = '#d2322d'
             package['icon'] = u'\u2717'  # Ballot X
-            package['title'] = 'This package has {:.0%} pep8 errors.'.format(package['ratio'])
+            package['title'] = 'This package has {:.0%} pep8 errors!!'.format(package['ratio'])
 
 
 def download_package_and_run_pep8(url):
