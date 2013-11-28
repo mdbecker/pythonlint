@@ -36,7 +36,7 @@ def get_json_url(package_name):
 
 
 safe_url_re = re.compile(
-    '^https:\/\/pypi.python.org\/packages\/source\/[a-z]\/[a-z0-9-_.]+\/[a-z0-9-_.]+$', re.I)
+    '^https:\/\/pypi.python.org\/packages\/source\/[a-z0-9]\/[a-z0-9-_.]+\/[a-z0-9-_.]+$', re.I)
 
 def annotate_pep8(packages):
     urls = get_source_package_urls(packages)
