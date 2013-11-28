@@ -76,7 +76,7 @@ def annotate_pep8(packages):
             package['title'] = 'This package has {:.0%} pep8 errors!!'.format(package['ratio'])
         good_packages.append(package)
 
-    packages = good_packages
+    return good_packages
 
 
 def download_package_and_run_pep8(url):
