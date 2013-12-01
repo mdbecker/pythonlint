@@ -46,9 +46,12 @@ def annotate_pep8(packages):
     for index, package in enumerate(packages):
         print index + 1, num_packages, package['name']
         if not package['name'] in urls:
-            print 'No url for package'.format(package['name'])
+            print 'No url for package {0}'.format(package['name'])
             continue
         pep8 = download_package_and_run_pep8(urls[package['name']])
+        if pep8['lines'] == 0:
+            print 'No python code in package {0}'.format(package['name'])
+            continue
         package['pep8'] = pep8['pep8']
         package['lines'] = pep8['lines']
         package['ratio'] = pep8['ratio']
@@ -92,15 +95,18 @@ def download_package_and_run_pep8(url):
     check_output('cd temp; wget --no-check-certificate {0}'.format(url), stderr=STDOUT, shell=True)
     fname = url.rsplit('/', 1)
     check_output('cd temp; tar -xf {0}'.format(fname[-1]), shell=True)
-    pep8 = check_output('find ./temp/ -name "*.py" -print0 | xargs -0 pep8 -qq --max-line-length=99 --count | egrep -v "[A-Z][0-9]+ " | tail -1; exit 0', stderr=STDOUT, shell=True)
+    pep8 = check_output(r'find ./temp/ -name "*.py" | egrep -v "/test/|tests|setup.py|test_" | tr "\n" "\000" | xargs -0 pep8 -qq --max-line-length=99 --count | egrep -v "[A-Z][0-9]+ " | tail -1; exit 0', stderr=STDOUT, shell=True)
     pep8 = pep8.strip()
     if not pep8:
         pep8 = 0
+    pep8 = int(pep8)
     print 'pep8', pep8
-    lines = check_output('find ./temp/ -name "*.py" -print0 | xargs -0 egrep ".*" | wc -l', shell=True)
-    lines = lines.strip()
+    lines = check_output(r'find ./temp/ -name "*.py" | egrep -v "/test/|tests|setup.py|test_" | tr "\n" "\000" | xargs -0 egrep ".*" | wc -l', shell=True)
+    lines = int(lines.strip())
     print 'lines', lines
-    ratio = float(pep8) / int(lines)
+    ratio = 0
+    if lines:
+        ratio = float(pep8) / lines
     print 'ratio {:.2%}'.format(ratio)
     check_output('rm -rf ./temp', shell=True)
     return {'pep8': pep8, 'lines': lines, 'ratio': ratio}
